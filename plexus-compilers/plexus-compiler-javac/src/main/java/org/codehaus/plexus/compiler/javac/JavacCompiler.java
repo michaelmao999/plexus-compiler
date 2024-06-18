@@ -71,6 +71,7 @@ import org.codehaus.plexus.compiler.CompilerOutputStyle;
 import org.codehaus.plexus.compiler.CompilerResult;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
+import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
@@ -106,6 +107,8 @@ public class JavacCompiler
     private static volatile Class<?> JAVAC_CLASS;
 
     private final List<Class<?>> javaccClasses = new CopyOnWriteArrayList<>();
+
+    private static Logger logger;
 
     @Requirement
     private InProcessCompiler inProcessCompiler;
@@ -148,6 +151,8 @@ public class JavacCompiler
         }
 
         logCompiling( sourceFiles, config );
+
+        logger = getLogger();
 
         String[] args = buildCompilerArguments( config, sourceFiles );
 
@@ -212,6 +217,7 @@ public class JavacCompiler
     public String[] createCommandLine( CompilerConfiguration config )
         throws CompilerException
     {
+        logger = getLogger();
         return buildCompilerArguments( config, getSourceFiles( config ) );
     }
 
@@ -421,12 +427,11 @@ public class JavacCompiler
             args.add( config.getSourceEncoding() );
         }
 
-        if ( !StringUtils.isEmpty( config.getModuleVersion() ) && !isJdk8)
-        {
+        if ( !StringUtils.isEmpty(config.getModuleVersion()) && !isJdk8) {
             args.add( "--module-version" );
             args.add( config.getModuleVersion() );
         }
-
+        boolean isSkip = false;
         for ( Map.Entry<String, String> entry : config.getCustomCompilerArgumentsEntries() )
         {
             String key = entry.getKey();
@@ -435,17 +440,28 @@ public class JavacCompiler
             {
                 continue;
             }
-
+            if (("--module-version".equals(key) || "--release".equals(key)) && isJdk8) {
+                isSkip = true;
+                continue;
+            }
+            if (isSkip) {
+                isSkip = false;
+                continue;
+            }
             args.add( key );
 
             String value = entry.getValue();
-
             if ( StringUtils.isEmpty( value ) )
             {
                 continue;
             }
 
             args.add( value );
+        }
+
+        if (logger != null) {
+            logger.error(args.toString());
+            logger.error(config.getTargetVersion()  + "="+  "1.8".equals(config.getTargetVersion().trim()));
         }
 
         return args.toArray( new String[0] );
