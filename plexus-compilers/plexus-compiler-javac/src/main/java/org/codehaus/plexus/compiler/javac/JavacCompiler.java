@@ -240,9 +240,14 @@ public class JavacCompiler
 
             args.add( getPathString( classpathEntries ) );
         }
-
+        boolean isJdk8 = false;
+        if (StringUtils.isEmpty( config.getTargetVersion() )
+                || (config.getTargetVersion() != null && "1.8".equals(config.getTargetVersion().trim())))
+        {
+            isJdk8 = true;
+        }
         List<String> modulepathEntries = config.getModulepathEntries();
-        if ( modulepathEntries != null && !modulepathEntries.isEmpty() )
+        if ( modulepathEntries != null && !modulepathEntries.isEmpty() && !isJdk8)
         {
             args.add( "--module-path" );
 
@@ -376,7 +381,7 @@ public class JavacCompiler
             args.add( "-Werror" );
         }
 
-        if ( !StringUtils.isEmpty( config.getReleaseVersion() ) )
+        if ( !StringUtils.isEmpty( config.getReleaseVersion() ) && !isJdk8)
         {
             args.add( "--release" );
             args.add( config.getReleaseVersion() );
@@ -388,7 +393,7 @@ public class JavacCompiler
             {
                 // Required, or it defaults to the target of your JDK (eg 1.5)
                 args.add( "-target" );
-                args.add( "1.1" );
+                args.add( "1.8" );
             }
             else
             {
@@ -416,7 +421,7 @@ public class JavacCompiler
             args.add( config.getSourceEncoding() );
         }
 
-        if ( !StringUtils.isEmpty( config.getModuleVersion() ) )
+        if ( !StringUtils.isEmpty( config.getModuleVersion() ) && !isJdk8)
         {
             args.add( "--module-version" );
             args.add( config.getModuleVersion() );

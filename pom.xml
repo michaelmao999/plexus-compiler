@@ -132,7 +132,11 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven.compiler.version}</version>
           <configuration>
-            <release>8</release>
+<!--            <release>8</release>-->
+            <compilerVersion>${maven.compiler.source}</compilerVersion>
+            <source>${maven.compiler.source}</source>
+            <target>${maven.compiler.source}</target>
+
           </configuration>
         </plugin>
         <plugin>
@@ -193,27 +197,27 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>enforce-java</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <version>[11,)</version>
-                  <message>[ERROR] OLD JDK [${java.version}] in use. This projects requires JDK 11 or newer</message>
-                </requireJavaVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-enforcer-plugin</artifactId>-->
+<!--        <version>3.1.0</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>enforce-java</id>-->
+<!--            <goals>-->
+<!--              <goal>enforce</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <rules>-->
+<!--                <requireJavaVersion>-->
+<!--                  <version>[11,)</version>-->
+<!--                  <message>[ERROR] OLD JDK [${java.version}] in use. This projects requires JDK 11 or newer</message>-->
+<!--                </requireJavaVersion>-->
+<!--              </rules>-->
+<!--            </configuration>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
     </plugins>
   </build>
